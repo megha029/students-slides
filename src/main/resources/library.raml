@@ -1,0 +1,146 @@
+#%RAML 1.0 Library
+usage: It is the file containg all entities
+types: 
+  Identifier: 
+    type: string
+    pattern: \d+ 
+    maxLength: 128
+  accountDescriptor:
+    type: object
+    properties: 
+      accountId:
+       type: Identifier
+       required: false
+       
+      accountDescriptorId:
+       type: number
+       required: false
+      accountType:
+       enum: [401A,401K,403B,AUTOLOAN, CD ,CHARGE, CHECKING ,COMMERCIALLINEOFCREDIT, COMMERCIALLOAN, COVERDELL, CREDITCARD ,ESCROW ,ESOP ,GUARDIAN ,HOMEEQUITYLOAN, HOMELINEOFCREDIT, INSITUTIONALTRUST, INSTALLMENT, IRA ,KEOGH, LINEOFCREDIT, LOAN, MILATARYLOAN, MONEYMARKET, MORTGAGE PERSONALLOAN, ROLLOVER, ROTH ,SARSEP, SAVINGS, SMBLOAN, STUDENTLOAN, TAXABLE, TDA, TRUST, UGMA ,UTMA]
+       required: false
+      displayName: 
+       type: string
+       required: false
+      status:
+        enum: [OPEN, CLOSED, PENDINGOPEN, PENDINGCLOSE, DELINQUENT,
+              PAID, NEGATIVECURRENTBALANCE,APPROVED,REJECTED]
+        required: false      
+  account:
+    type: accountDescriptor
+    properties: 
+      parentAccountId:
+       type: Identifier
+       required: true
+      nickname:
+       type: string
+       required: true
+      accountNumber: 
+       type: string
+       required: true
+      interestRate: 
+       type: number
+       required: true
+      currency : 
+       type: string
+       required: true
+      accountDescriptorId:
+       type: number
+       required: false
+
+  transaction:
+    type: accountDescriptor
+    properties: 
+      accountId: 
+       type: Identifier
+       required: false
+      transactionId: 
+       type: Identifier
+      referenceTransactionId : 
+       type: Identifier
+      transactionTimestamp: 
+       type: date-only
+       required: true
+      amount: 
+       type: number
+       required: true     
+
+  depositTransaction:
+    type: transaction
+    properties: 
+      transactionType:
+        enum: [CHECK, WITHDRAWAL, TRANSFER, POSDEBIT,ATMWITHDRAWAL, BILLPAYMENT, FEE, DEPOSIT, ADJUSTMENT,INTEREST, DIVIDEND, DIRECTDEPOSIT, ATMDEPOSIT, POSCREDIT]
+      payee: 
+       type: string
+       required: false
+      checkNumber: 
+       type: integer
+       required: false     
+      
+  depositAccount:
+    type: account
+    properties:
+      currentBalance: 
+       type: number
+       required: false
+      availableBalance:
+       type: number
+       required: false
+      transactions:
+       type: depositTransaction[]
+  Customer:
+   type: object
+   properties: 
+     customerId :
+      type: Identifier
+      required: true
+     name:
+      type: string
+      required: true
+     
+  
+ 
+  Error:
+   type:
+    properties:
+     code: integer
+     message: string 
+  accounts:
+    type: object
+    properties: 
+      total:
+        type: integer
+      totalPages:
+        type: integer
+      page:
+       type: integer
+      account:
+       type: account[]   
+
+  loanTransaction:
+   type: transaction
+   properties: 
+     transactionType:
+        enum: [PAYMENT, FEE, ADJUSTMENT, INTEREST]
+  loanAccount:
+   type: account
+   properties: 
+     balanceAsOf:
+      type: date-only
+      required: true
+     principalBalance :
+      type: number
+      required: true
+     originalPrincipal :
+       type: number
+       required: true
+     totalNumberOfPayments :
+       type: integer
+       required: true
+     transactions:
+       type: loanTransaction[]
+     paymentFrequency:
+       enum: [ANNUALLY,BIWEEKLY,DAILY,MONTHLY,SEMIANNUALLY,SEMIMONTHLY,WEEKLY]        
+       
+  typeunion: accounts|accountDescriptor|transaction
+         
+

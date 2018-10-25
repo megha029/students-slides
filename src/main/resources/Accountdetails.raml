@@ -1,0 +1,51 @@
+#%RAML 1.0
+baseUri: https://mocksvc.mulesoft.com/mocks/f93ff5f2-9b66-4e63-a28d-c28d823321f3/services/data/{version}/chatter # baseUri: https://mocksvc.mulesoft.com/mocks/a3eeeaca-3b0f-4662-9843-e99dfdb897a3/services/data/{version}/chatter # baseUri: https://mocksvc.mulesoft.com/mocks/df8386bf-085c-46bd-aaef-435cf8b7fd90/services/data/{v1}/chatter 
+ 
+title: accountDetails
+version: v1
+
+protocols: [HTTP]
+mediaType: application/json  
+
+uses: 
+  library: library.raml
+  
+securitySchemes: 
+  oauth 2_0 : !include securityScheme.raml
+securedBy: [oauth 2_0]
+
+/accounts/transactions:
+ get:
+   description: get all account details for specific customerid
+   queryParameters: 
+     customerId: 
+       type: string
+       required: true
+     startDate: 
+       type: date-only
+       required: true
+     endDate:
+       type: date-only
+       required: true 
+
+   responses: 
+     200:
+       body: 
+        application/json:
+         type: library.transaction
+         example: !include AccountDetailExample.raml
+
+
+     400:
+       body: 
+         application/json:
+           type: library.Error
+           example: {"message":"Invalid Request please check url",                         "code":400}   
+     500:
+       body:
+        application/json:
+          type: library.Error
+          example: {"message":"server not found", "code":500}   
+
+         
+           
